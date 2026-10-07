@@ -1,217 +1,366 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JARVIS</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<title>JARVIS</title>
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: #02050a;
-      color: #8eeaff;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
+<style>
 
-    .interface {
-      width: 92%;
-      max-width: 700px;
-      text-align: center;
-    }
+* {
+  box-sizing: border-box;
+}
 
-    .title {
-      font-size: 42px;
-      letter-spacing: 12px;
-      margin-bottom: 8px;
-    }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at center, #07151d 0%, #020509 55%, #000 100%);
+  color: #8eeaff;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
 
-    .status {
-      font-size: 13px;
-      letter-spacing: 4px;
-      opacity: .7;
-      margin-bottom: 45px;
-    }
+.interface {
+  width: 92%;
+  max-width: 700px;
+  text-align: center;
+}
 
-    .core {
-      width: 220px;
-      height: 220px;
-      margin: auto;
-      border-radius: 50%;
-      border: 2px solid #8eeaff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow:
-        0 0 15px #8eeaff,
-        0 0 50px rgba(142,234,255,.4),
-        inset 0 0 30px rgba(142,234,255,.25);
-      animation: pulse 2s infinite;
-    }
+.title {
+  font-size: 42px;
+  letter-spacing: 12px;
+  text-shadow: 0 0 20px #8eeaff;
+}
 
-    .core::before {
-      content: "";
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: 2px solid #8eeaff;
-      box-shadow: 0 0 25px #8eeaff;
-    }
+.status {
+  margin-top: 10px;
+  font-size: 13px;
+  letter-spacing: 4px;
+  opacity: .7;
+}
 
-    @keyframes pulse {
-      50% {
-        transform: scale(1.04);
-      }
-    }
+.core {
+  width: 230px;
+  height: 230px;
+  margin: 50px auto 35px;
 
-    .message {
-      margin: 45px auto 20px;
-      min-height: 50px;
-      font-size: 18px;
-    }
+  border-radius: 50%;
+  border: 2px solid #8eeaff;
 
-    button {
-      display: block;
-      margin: 12px auto;
-      background: transparent;
-      color: #8eeaff;
-      border: 1px solid #8eeaff;
-      padding: 14px 28px;
-      border-radius: 30px;
-      font-size: 15px;
-      letter-spacing: 2px;
-      cursor: pointer;
-    }
-  </style>
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  box-shadow:
+    0 0 20px #8eeaff,
+    0 0 70px rgba(142,234,255,.35),
+    inset 0 0 40px rgba(142,234,255,.2);
+
+  animation: pulse 2s infinite;
+}
+
+.core::before {
+  content: "";
+
+  width: 125px;
+  height: 125px;
+
+  border-radius: 50%;
+  border: 2px solid #8eeaff;
+
+  box-shadow:
+    0 0 20px #8eeaff,
+    inset 0 0 25px rgba(142,234,255,.3);
+}
+
+@keyframes pulse {
+
+  0%,100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+
+}
+
+.message {
+  min-height: 60px;
+  margin: 20px auto;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+button {
+
+  background: transparent;
+  color: #8eeaff;
+
+  border: 1px solid #8eeaff;
+
+  padding: 14px 28px;
+
+  margin: 7px;
+
+  border-radius: 30px;
+
+  font-size: 14px;
+  letter-spacing: 2px;
+
+  box-shadow:
+    0 0 15px rgba(142,234,255,.2);
+
+}
+
+button:active {
+  transform: scale(.95);
+}
+
+</style>
 </head>
 
 <body>
 
-  <div class="interface">
+<div class="interface">
 
-    <div class="title">JARVIS</div>
-
-    <div class="status" id="status">
-      SYSTEM OFFLINE
-    </div>
-
-    <div class="core"></div>
-
-    <div class="message" id="message">
-      Sistema preparado.
-    </div>
-
-    <button onclick="activateJarvis()">
-      ACTIVAR JARVIS
-    </button>
-
-    <button onclick="listenToMe()">
-      🎙️ HABLAR CON JARVIS
-    </button>
-
+  <div class="title">
+    JARVIS
   </div>
 
-  <script>
+  <div class="status" id="status">
+    SYSTEM READY
+  </div>
 
-    function speak(text) {
+  <div class="core"></div>
 
-      const speech = new SpeechSynthesisUtterance(text);
+  <div class="message" id="message">
+    Esperando instrucciones.
+  </div>
 
-      speech.lang = "es-MX";
-      speech.rate = 0.95;
+  <button onclick="listen()">
+    🎙️ HABLAR
+  </button>
 
-      speechSynthesis.cancel();
-      speechSynthesis.speak(speech);
-    }
+  <button onclick="activate()">
+    ACTIVAR
+  </button>
 
-
-    function activateJarvis() {
-
-      document.getElementById("status").textContent =
-        "SYSTEM ONLINE";
-
-      document.getElementById("message").textContent =
-        "Buenas. Estoy listo para ayudarte.";
-
-      speak("Buenas. Estoy listo para ayudarte.");
-    }
+</div>
 
 
-    function listenToMe() {
+<script>
 
-      const SpeechRecognition =
-        window.SpeechRecognition ||
-        window.webkitSpeechRecognition;
+function speak(text) {
 
-      if (!SpeechRecognition) {
+  const voice =
+    new SpeechSynthesisUtterance(text);
 
-        document.getElementById("message").textContent =
-          "El reconocimiento de voz no está disponible.";
+  voice.lang = "es-MX";
+  voice.rate = 0.92;
+  voice.pitch = 0.9;
 
-        return;
-      }
+  speechSynthesis.cancel();
 
-      const recognition = new SpeechRecognition();
-
-      recognition.lang = "es-MX";
-      recognition.continuous = false;
-      recognition.interimResults = false;
-
-      document.getElementById("status").textContent =
-        "ESCUCHANDO...";
-
-      document.getElementById("message").textContent =
-        "Te escucho.";
-
-      recognition.start();
-
-      recognition.onresult = function(event) {
-
-        const text =
-          event.results[0][0].transcript;
-
-        document.getElementById("status").textContent =
-          "PROCESANDO...";
-
-        document.getElementById("message").textContent =
-          "Tú dijiste: " + text;
-
-        setTimeout(function() {
-
-          document.getElementById("status").textContent =
-            "SYSTEM ONLINE";
-
-          document.getElementById("message").textContent =
-            "He recibido tu mensaje. Pronto podré responderte con inteligencia artificial.";
-
-          speak(
-            "He recibido tu mensaje. Pronto podré responderte con inteligencia artificial."
-          );
-
-        }, 700);
-      };
+  speechSynthesis.speak(voice);
+}
 
 
-      recognition.onerror = function() {
+function show(text) {
 
-        document.getElementById("status").textContent =
-          "SYSTEM ONLINE";
+  document.getElementById("message")
+    .textContent = text;
 
-        document.getElementById("message").textContent =
-          "No pude escucharte. Inténtalo nuevamente.";
-      };
+}
 
-    }
 
-  </script>
+function status(text) {
+
+  document.getElementById("status")
+    .textContent = text;
+
+}
+
+
+function activate() {
+
+  status("SYSTEM ONLINE");
+
+  show("Todos los sistemas funcionando.");
+
+  speak(
+    "Todos los sistemas funcionando. ¿En qué puedo ayudarte?"
+  );
+
+}
+
+
+function respond(command) {
+
+  command = command.toLowerCase();
+
+  if (
+    command.includes("hola") ||
+    command.includes("buenas")
+  ) {
+
+    return "Buenas. Estoy listo para ayudarte.";
+
+  }
+
+
+  if (
+    command.includes("quién eres") ||
+    command.includes("quien eres")
+  ) {
+
+    return "Soy JARVIS, tu asistente virtual.";
+
+  }
+
+
+  if (
+    command.includes("qué puedes hacer") ||
+    command.includes("que puedes hacer")
+  ) {
+
+    return "Puedo escucharte, responder comandos básicos y controlar las funciones que iremos añadiendo.";
+
+  }
+
+
+  if (
+    command.includes("hora")
+  ) {
+
+    const now = new Date();
+
+    return "Son las " +
+      now.toLocaleTimeString(
+        "es-MX",
+        {
+          hour: "numeric",
+          minute: "2-digit"
+        }
+      );
+
+  }
+
+
+  if (
+    command.includes("estado") ||
+    command.includes("sistema")
+  ) {
+
+    return "Todos los sistemas están funcionando correctamente.";
+
+  }
+
+
+  if (
+    command.includes("activa") ||
+    command.includes("activar")
+  ) {
+
+    return "Sistema activado. Todos los módulos están preparados.";
+
+  }
+
+
+  if (
+    command.includes("gracias")
+  ) {
+
+    return "A tu servicio.";
+
+  }
+
+
+  return "He recibido tu instrucción. Todavía estoy aprendiendo nuevas funciones.";
+
+}
+
+
+function listen() {
+
+  const Recognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!Recognition) {
+
+    show(
+      "El reconocimiento de voz no está disponible."
+    );
+
+    return;
+
+  }
+
+
+  const recognition =
+    new Recognition();
+
+  recognition.lang = "es-MX";
+
+  recognition.continuous = false;
+
+  recognition.interimResults = false;
+
+
+  status("ESCUCHANDO...");
+
+  show("Te escucho.");
+
+
+  recognition.start();
+
+
+  recognition.onresult = function(event) {
+
+    const command =
+      event.results[0][0].transcript;
+
+
+    status("PROCESANDO...");
+
+
+    const answer =
+      respond(command);
+
+
+    show(answer);
+
+
+    setTimeout(function() {
+
+      status("SYSTEM ONLINE");
+
+      speak(answer);
+
+    }, 300);
+
+  };
+
+
+  recognition.onerror = function() {
+
+    status("SYSTEM ONLINE");
+
+    show(
+      "No pude escucharte. Inténtalo nuevamente."
+    );
+
+  };
+
+}
+
+</script>
 
 </body>
 </html>
