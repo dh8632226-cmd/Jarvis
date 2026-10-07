@@ -69,9 +69,6 @@
     @keyframes pulse {
       50% {
         transform: scale(1.04);
-        box-shadow:
-          0 0 30px #8eeaff,
-          0 0 80px rgba(142,234,255,.5);
       }
     }
 
@@ -82,6 +79,8 @@
     }
 
     button {
+      display: block;
+      margin: 12px auto;
       background: transparent;
       color: #8eeaff;
       border: 1px solid #8eeaff;
@@ -90,11 +89,6 @@
       font-size: 15px;
       letter-spacing: 2px;
       cursor: pointer;
-      box-shadow: 0 0 15px rgba(142,234,255,.25);
-    }
-
-    button:active {
-      transform: scale(.96);
     }
   </style>
 </head>
@@ -119,9 +113,26 @@
       ACTIVAR JARVIS
     </button>
 
+    <button onclick="listenToMe()">
+      🎙️ HABLAR CON JARVIS
+    </button>
+
   </div>
 
   <script>
+
+    function speak(text) {
+
+      const speech = new SpeechSynthesisUtterance(text);
+
+      speech.lang = "es-MX";
+      speech.rate = 0.95;
+
+      speechSynthesis.cancel();
+      speechSynthesis.speak(speech);
+    }
+
+
     function activateJarvis() {
 
       document.getElementById("status").textContent =
@@ -130,15 +141,76 @@
       document.getElementById("message").textContent =
         "Buenas. Estoy listo para ayudarte.";
 
-      const speech = new SpeechSynthesisUtterance(
-        "Buenas. Estoy listo para ayudarte."
-      );
-
-      speech.lang = "es-MX";
-      speech.rate = 0.95;
-
-      speechSynthesis.speak(speech);
+      speak("Buenas. Estoy listo para ayudarte.");
     }
+
+
+    function listenToMe() {
+
+      const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+
+        document.getElementById("message").textContent =
+          "El reconocimiento de voz no está disponible.";
+
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+
+      recognition.lang = "es-MX";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      document.getElementById("status").textContent =
+        "ESCUCHANDO...";
+
+      document.getElementById("message").textContent =
+        "Te escucho.";
+
+      recognition.start();
+
+      recognition.onresult = function(event) {
+
+        const text =
+          event.results[0][0].transcript;
+
+        document.getElementById("status").textContent =
+          "PROCESANDO...";
+
+        document.getElementById("message").textContent =
+          "Tú dijiste: " + text;
+
+        setTimeout(function() {
+
+          document.getElementById("status").textContent =
+            "SYSTEM ONLINE";
+
+          document.getElementById("message").textContent =
+            "He recibido tu mensaje. Pronto podré responderte con inteligencia artificial.";
+
+          speak(
+            "He recibido tu mensaje. Pronto podré responderte con inteligencia artificial."
+          );
+
+        }, 700);
+      };
+
+
+      recognition.onerror = function() {
+
+        document.getElementById("status").textContent =
+          "SYSTEM ONLINE";
+
+        document.getElementById("message").textContent =
+          "No pude escucharte. Inténtalo nuevamente.";
+      };
+
+    }
+
   </script>
 
 </body>
