@@ -3,11 +3,7 @@
 <head>
 
 <meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>JARVIS</title>
 
@@ -18,9 +14,7 @@
 }
 
 body {
-
   margin: 0;
-
   min-height: 100vh;
 
   background:
@@ -32,31 +26,23 @@ body {
     );
 
   color: #8eeaff;
-
   font-family: Arial, sans-serif;
 
   display: flex;
-
   justify-content: center;
-
   align-items: center;
 
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 .interface {
-
   width: 92%;
-
-  max-width: 700px;
-
+  max-width: 760px;
   text-align: center;
 }
 
 .title {
-
   font-size: 42px;
-
   letter-spacing: 12px;
 
   text-shadow:
@@ -65,32 +51,26 @@ body {
 }
 
 .status {
-
   margin-top: 10px;
 
   font-size: 13px;
-
   letter-spacing: 4px;
 
   opacity: .7;
 }
 
 .core {
-
   width: 230px;
-
   height: 230px;
 
-  margin: 50px auto 35px;
+  margin: 40px auto 30px;
 
   border-radius: 50%;
 
   border: 2px solid #8eeaff;
 
   display: flex;
-
   justify-content: center;
-
   align-items: center;
 
   box-shadow:
@@ -102,11 +82,9 @@ body {
 }
 
 .core::before {
-
   content: "";
 
   width: 125px;
-
   height: 125px;
 
   border-radius: 50%;
@@ -131,13 +109,11 @@ body {
 }
 
 .message {
-
-  min-height: 80px;
+  min-height: 90px;
 
   margin: 20px auto;
 
   font-size: 18px;
-
   line-height: 1.6;
 
   text-shadow:
@@ -152,13 +128,13 @@ button {
 
   border: 1px solid #8eeaff;
 
-  padding: 14px 28px;
+  padding: 14px 24px;
 
-  margin: 7px;
+  margin: 6px;
 
   border-radius: 30px;
 
-  font-size: 14px;
+  font-size: 13px;
 
   letter-spacing: 2px;
 
@@ -168,17 +144,81 @@ button {
 }
 
 button:active {
-
   transform: scale(.95);
+}
+
+.panel {
+
+  margin-top: 25px;
+
+  border: 1px solid rgba(142,234,255,.25);
+
+  padding: 15px;
+
+  border-radius: 15px;
+
+  text-align: left;
+
+  background: rgba(0,20,30,.35);
+
+}
+
+.panel-title {
+
+  letter-spacing: 3px;
+
+  font-size: 12px;
+
+  margin-bottom: 10px;
+
+  opacity: .7;
+
+}
+
+#history {
+
+  max-height: 160px;
+
+  overflow-y: auto;
+
+  font-size: 13px;
+
+  line-height: 1.6;
+
+}
+
+.history-item {
+
+  border-bottom:
+    1px solid rgba(142,234,255,.08);
+
+  padding: 6px 0;
+}
+
+.skill {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  padding: 6px 0;
+
+  font-size: 13px;
+}
+
+.online {
+  color: #8eeaff;
+}
+
+.offline {
+  opacity: .4;
 }
 
 </style>
 
 </head>
 
-
 <body>
-
 
 <div class="interface">
 
@@ -210,6 +250,38 @@ button:active {
     ACTIVAR
   </button>
 
+  <button onclick="showSkills()">
+    🧩 HABILIDADES
+  </button>
+
+  <button onclick="showHistory()">
+    📜 HISTORIAL
+  </button>
+
+
+  <div class="panel">
+
+    <div class="panel-title">
+      SYSTEM MODULES
+    </div>
+
+    <div id="skills"></div>
+
+  </div>
+
+
+  <div class="panel">
+
+    <div class="panel-title">
+      COMMAND LOG
+    </div>
+
+    <div id="history">
+      Sistema iniciado.
+    </div>
+
+  </div>
+
 </div>
 
 
@@ -220,10 +292,141 @@ button:active {
 ===================================================== */
 
 const MEMORY_KEY =
-  "jarvis_memory";
+  "jarvis_memory_v2";
 
 const NOTES_KEY =
-  "jarvis_notes";
+  "jarvis_notes_v2";
+
+const HISTORY_KEY =
+  "jarvis_history_v2";
+
+const SKILLS_KEY =
+  "jarvis_skills_v2";
+
+
+/* =====================================================
+   HABILIDADES
+===================================================== */
+
+const defaultSkills = {
+
+  memoria: true,
+
+  notas: true,
+
+  hora: true,
+
+  fecha: true,
+
+  calculadora: true,
+
+  temporizador: true,
+
+  busqueda: true,
+
+  clima: true,
+
+  musica: true,
+
+  dispositivo: true,
+
+  historial: true
+
+};
+
+
+function getSkills() {
+
+  try {
+
+    return JSON.parse(
+      localStorage.getItem(
+        SKILLS_KEY
+      )
+    ) || defaultSkills;
+
+  } catch {
+
+    return defaultSkills;
+
+  }
+
+}
+
+
+function saveSkills(skills) {
+
+  localStorage.setItem(
+    SKILLS_KEY,
+    JSON.stringify(skills)
+  );
+
+}
+
+
+function skillEnabled(name) {
+
+  return getSkills()[name] !== false;
+
+}
+
+
+function showSkills() {
+
+  const skills =
+    getSkills();
+
+  const container =
+    document.getElementById(
+      "skills"
+    );
+
+  container.innerHTML = "";
+
+  Object.keys(skills)
+    .forEach(name => {
+
+      const div =
+        document.createElement(
+          "div"
+        );
+
+      div.className =
+        "skill";
+
+      div.innerHTML = `
+
+        <span>
+          ${name.toUpperCase()}
+        </span>
+
+        <span class="${
+          skills[name]
+          ? "online"
+          : "offline"
+        }">
+
+          ${
+            skills[name]
+            ? "● ONLINE"
+            : "○ OFFLINE"
+          }
+
+        </span>
+
+      `;
+
+      container.appendChild(
+        div
+      );
+
+    });
+
+  answer(
+    "Estos son mis módulos actuales, señor."
+  );
+
+}
 
 
 /* =====================================================
@@ -244,14 +447,18 @@ function speak(text) {
     );
 
   const speech =
-    new SpeechSynthesisUtterance(text);
+    new SpeechSynthesisUtterance(
+      text
+    );
 
   speech.lang =
     "es-MX";
 
   if (voice) {
+
     speech.voice =
       voice;
+
   }
 
   speech.rate =
@@ -268,6 +475,7 @@ function speak(text) {
   speechSynthesis.speak(
     speech
   );
+
 }
 
 
@@ -278,7 +486,9 @@ function speak(text) {
 function show(text) {
 
   document
-    .getElementById("message")
+    .getElementById(
+      "message"
+    )
     .textContent = text;
 
 }
@@ -287,7 +497,9 @@ function show(text) {
 function status(text) {
 
   document
-    .getElementById("status")
+    .getElementById(
+      "status"
+    )
     .textContent = text;
 
 }
@@ -299,11 +511,161 @@ function answer(text) {
 
   setTimeout(() => {
 
-    status("SYSTEM ONLINE");
+    status(
+      "SYSTEM ONLINE"
+    );
 
     speak(text);
 
-  }, 250);
+  }, 200);
+
+}
+
+
+/* =====================================================
+   HISTORIAL
+===================================================== */
+
+function getHistory() {
+
+  try {
+
+    return JSON.parse(
+      localStorage.getItem(
+        HISTORY_KEY
+      )
+    ) || [];
+
+  } catch {
+
+    return [];
+
+  }
+
+}
+
+
+function addHistory(
+  command,
+  response
+) {
+
+  const history =
+    getHistory();
+
+  history.push({
+
+    command,
+
+    response,
+
+    date:
+      new Date()
+        .toLocaleString(
+          "es-MX"
+        )
+
+  });
+
+  while (
+    history.length > 50
+  ) {
+
+    history.shift();
+
+  }
+
+  localStorage.setItem(
+    HISTORY_KEY,
+    JSON.stringify(history)
+  );
+
+}
+
+
+function showHistory() {
+
+  const history =
+    getHistory();
+
+  const container =
+    document.getElementById(
+      "history"
+    );
+
+  if (
+    history.length === 0
+  ) {
+
+    container.innerHTML =
+      "Sin comandos registrados.";
+
+    return;
+
+  }
+
+  container.innerHTML =
+    history
+      .slice()
+      .reverse()
+      .slice(0,15)
+      .map(item => `
+
+        <div class="history-item">
+
+          <strong>
+            Señor:
+          </strong>
+
+          ${escapeHTML(
+            item.command
+          )}
+
+          <br>
+
+          <strong>
+            JARVIS:
+          </strong>
+
+          ${escapeHTML(
+            item.response
+          )}
+
+        </div>
+
+      `)
+      .join("");
+
+}
+
+
+/* =====================================================
+   PROTECCIÓN HTML
+===================================================== */
+
+function escapeHTML(text) {
+
+  return text
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 
 }
 
@@ -320,13 +682,14 @@ function getMemory() {
       localStorage.getItem(
         MEMORY_KEY
       )
-    ) || {};
+    ) || [];
 
   } catch {
 
-    return {};
+    return [];
 
   }
+
 }
 
 
@@ -345,9 +708,13 @@ function remember(command) {
   const patterns = [
 
     "recuerda que ",
+
     "recuerda ",
+
     "memoriza ",
+
     "guarda que ",
+
     "guarda "
 
   ];
@@ -359,12 +726,16 @@ function remember(command) {
   ) {
 
     if (
-      command.startsWith(pattern)
+      command.startsWith(
+        pattern
+      )
     ) {
 
       information =
         command
-          .substring(pattern.length)
+          .substring(
+            pattern.length
+          )
           .trim();
 
       break;
@@ -382,21 +753,27 @@ function remember(command) {
   const memory =
     getMemory();
 
-  const id =
-    "memoria_" +
-    Date.now();
+  memory.push({
 
-  memory[id] =
-    information;
+    text: information,
+
+    date:
+      new Date()
+        .toLocaleString(
+          "es-MX"
+        )
+
+  });
 
   saveMemory(
     memory
   );
 
   return (
-    "Por supuesto, señor. " +
-    "He guardado esa información en mi memoria."
+    "Entendido, señor. " +
+    "He almacenado esa información en mi memoria."
   );
+
 }
 
 
@@ -405,25 +782,28 @@ function recallMemory() {
   const memory =
     getMemory();
 
-  const items =
-    Object.values(memory);
-
   if (
-    items.length === 0
+    memory.length === 0
   ) {
 
     return (
-      "Actualmente no tengo " +
-      "ningún recuerdo almacenado, señor."
+      "No tengo recuerdos almacenados, señor."
     );
 
   }
 
   return (
-    "Por supuesto, señor. " +
-    "Estos son los datos que recuerdo: " +
-    items.join(". ")
+    "Tengo " +
+    memory.length +
+    " recuerdos almacenados. " +
+    memory
+      .slice(-10)
+      .map(
+        item => item.text
+      )
+      .join(". ")
   );
+
 }
 
 
@@ -446,15 +826,6 @@ function getNotes() {
     return [];
 
   }
-}
-
-
-function saveNotes(notes) {
-
-  localStorage.setItem(
-    NOTES_KEY,
-    JSON.stringify(notes)
-  );
 
 }
 
@@ -464,9 +835,13 @@ function createNote(command) {
   const prefixes = [
 
     "anota ",
+
     "apunta ",
+
     "crea una nota ",
+
     "haz una nota ",
+
     "escribe una nota "
 
   ];
@@ -478,12 +853,16 @@ function createNote(command) {
   ) {
 
     if (
-      command.startsWith(prefix)
+      command.startsWith(
+        prefix
+      )
     ) {
 
       note =
         command
-          .substring(prefix.length)
+          .substring(
+            prefix.length
+          )
           .trim();
 
       break;
@@ -507,15 +886,21 @@ function createNote(command) {
 
     date:
       new Date()
-        .toLocaleString("es-MX")
+        .toLocaleString(
+          "es-MX"
+        )
 
   });
 
-  saveNotes(notes);
+  localStorage.setItem(
+    NOTES_KEY,
+    JSON.stringify(notes)
+  );
 
   return (
-    "Nota guardada, señor."
+    "Nota almacenada, señor."
   );
+
 }
 
 
@@ -529,48 +914,21 @@ function readNotes() {
   ) {
 
     return (
-      "No hay notas guardadas, señor."
+      "No existen notas almacenadas, señor."
     );
 
   }
 
-  const latest =
+  return (
+    "Sus notas recientes son: " +
     notes
       .slice(-5)
       .map(
         n => n.text
       )
-      .join(". ");
-
-  return (
-    "Estas son sus notas recientes, señor: " +
-    latest
+      .join(". ")
   );
-}
 
-
-/* =====================================================
-   FECHA
-===================================================== */
-
-function getDate() {
-
-  const now =
-    new Date();
-
-  return (
-    "Hoy es " +
-    now.toLocaleDateString(
-      "es-MX",
-      {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric"
-      }
-    ) +
-    ", señor."
-  );
 }
 
 
@@ -580,20 +938,43 @@ function getDate() {
 
 function getTime() {
 
-  const now =
-    new Date();
-
   return (
     "Son las " +
-    now.toLocaleTimeString(
-      "es-MX",
-      {
-        hour: "numeric",
-        minute: "2-digit"
-      }
-    ) +
+    new Date()
+      .toLocaleTimeString(
+        "es-MX",
+        {
+          hour: "numeric",
+          minute: "2-digit"
+        }
+      ) +
     ", señor."
   );
+
+}
+
+
+/* =====================================================
+   FECHA
+===================================================== */
+
+function getDate() {
+
+  return (
+    "Hoy es " +
+    new Date()
+      .toLocaleDateString(
+        "es-MX",
+        {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        }
+      ) +
+    ", señor."
+  );
+
 }
 
 
@@ -605,52 +986,58 @@ function calculate(command) {
 
   let expression =
     command
+
       .replace(
         /cuánto es/gi,
         ""
       )
+
       .replace(
         /cuanto es/gi,
         ""
       )
+
       .replace(
         /calcula/gi,
         ""
       )
+
       .replace(
         /calcular/gi,
         ""
       )
+
       .replace(
         /por/gi,
         "*"
       )
+
       .replace(
         /más/gi,
         "+"
       )
+
       .replace(
         /mas/gi,
         "+"
       )
+
       .replace(
         /menos/gi,
         "-"
       )
+
       .replace(
         /dividido entre/gi,
         "/"
       )
+
       .replace(
         /entre/gi,
         "/"
       )
-      .trim();
 
-  /*
-    Solo permitimos números
-    y operadores matemáticos.
-  */
+      .trim();
 
   if (
     !/^[0-9+\-*/().%\s]+$/
@@ -658,8 +1045,7 @@ function calculate(command) {
   ) {
 
     return (
-      "No puedo interpretar " +
-      "esa operación, señor."
+      "No puedo interpretar esa operación, señor."
     );
 
   }
@@ -682,11 +1068,11 @@ function calculate(command) {
   } catch {
 
     return (
-      "No he podido calcular " +
-      "esa operación, señor."
+      "No he podido completar el cálculo, señor."
     );
 
   }
+
 }
 
 
@@ -704,8 +1090,7 @@ function timer(command) {
   if (!match) {
 
     return (
-      "Indíqueme una cantidad de tiempo, señor. " +
-      "Por ejemplo: temporizador de 5 minutos."
+      "Indíqueme una cantidad de tiempo, señor."
     );
 
   }
@@ -742,7 +1127,7 @@ function timer(command) {
   setTimeout(() => {
 
     const message =
-      "Señor, el temporizador ha terminado.";
+      "Señor, el temporizador ha finalizado.";
 
     show(message);
 
@@ -761,16 +1146,17 @@ function timer(command) {
     unit +
     ", señor."
   );
+
 }
 
 
 /* =====================================================
-   BÚSQUEDA WEB
+   BÚSQUEDA
 ===================================================== */
 
 function searchWeb(command) {
 
-  let query =
+  const query =
     command
       .replace(
         "busca ",
@@ -798,18 +1184,16 @@ function searchWeb(command) {
 
   }
 
-  const url =
-    "https://www.google.com/search?q=" +
-    encodeURIComponent(query);
-
   window.open(
-    url,
+    "https://www.google.com/search?q=" +
+    encodeURIComponent(query),
     "_blank"
   );
 
   return (
-    "Abriendo los resultados de búsqueda, señor."
+    "Abriendo la búsqueda, señor."
   );
+
 }
 
 
@@ -819,7 +1203,7 @@ function searchWeb(command) {
 
 function weather(command) {
 
-  let city =
+  const city =
     command
       .replace(
         "clima",
@@ -835,27 +1219,23 @@ function weather(command) {
       )
       .trim();
 
-  if (!city) {
-
-    city =
-      "mi ubicación";
-
-  }
-
-  const url =
-    "https://www.google.com/search?q=" +
-    encodeURIComponent(
-      "clima " + city
-    );
+  const destination =
+    city ||
+    "mi ubicación";
 
   window.open(
-    url,
+    "https://www.google.com/search?q=" +
+    encodeURIComponent(
+      "clima " +
+      destination
+    ),
     "_blank"
   );
 
   return (
-    "Consultando el clima para usted, señor."
+    "Consultando el clima, señor."
   );
+
 }
 
 
@@ -865,60 +1245,67 @@ function weather(command) {
 
 function music(command) {
 
-  let search =
+  const query =
     command
+
       .replace(
-        "pon ",
+        "pon música",
         ""
       )
+
       .replace(
-        "reproduce ",
+        "pon musica",
         ""
       )
+
       .replace(
-        "música ",
+        "reproduce música",
         ""
       )
+
+      .replace(
+        "reproduce musica",
+        ""
+      )
+
       .trim();
 
-  const url =
+  window.open(
     "https://www.youtube.com/results?search_query=" +
     encodeURIComponent(
-      search || "música"
-    );
-
-  window.open(
-    url,
+      query || "música"
+    ),
     "_blank"
   );
 
   return (
-    "Abriendo música para usted, señor."
+    "Abriendo música, señor."
   );
+
 }
 
 
 /* =====================================================
-   INFORMACIÓN DEL DISPOSITIVO
+   DISPOSITIVO
 ===================================================== */
 
 function deviceInfo() {
 
-  const browser =
+  const ua =
     navigator.userAgent;
 
   let device =
     "dispositivo móvil";
 
   if (
-    /iPhone/i.test(browser)
+    /iPhone/i.test(ua)
   ) {
 
     device =
       "iPhone";
 
   } else if (
-    /iPad/i.test(browser)
+    /iPad/i.test(ua)
   ) {
 
     device =
@@ -929,9 +1316,69 @@ function deviceInfo() {
   return (
     "Está utilizando un " +
     device +
-    ", señor. " +
-    "El navegador está funcionando correctamente."
+    ", señor."
   );
+
+}
+
+
+/* =====================================================
+   NUEVA HABILIDAD
+===================================================== */
+
+function proposeSkill(command) {
+
+  const prefixes = [
+
+    "aprende a ",
+
+    "aprende ",
+
+    "quiero que aprendas a ",
+
+    "quiero que aprendas "
+
+  ];
+
+  let skill =
+    "";
+
+  for (
+    const prefix of prefixes
+  ) {
+
+    if (
+      command.startsWith(prefix)
+    ) {
+
+      skill =
+        command
+          .substring(
+            prefix.length
+          )
+          .trim();
+
+      break;
+
+    }
+
+  }
+
+  if (!skill) {
+
+    return null;
+
+  }
+
+  return (
+    "Entendido, señor. " +
+    "He identificado una nueva habilidad propuesta: " +
+    skill +
+    ". " +
+    "La habilidad todavía no será instalada automáticamente. " +
+    "Necesitaría una implementación segura antes de incorporarla."
+  );
+
 }
 
 
@@ -947,42 +1394,7 @@ function personality(command) {
 
     return (
       "Buenas, señor. " +
-      "Es un placer volver a asistirle."
-    );
-
-  }
-
-  if (
-    command.includes("buenos días") ||
-    command.includes("buenos dias")
-  ) {
-
-    return (
-      "Buenos días, señor. " +
-      "Todos los sistemas están preparados. " +
-      "¿En qué puedo asistirle?"
-    );
-
-  }
-
-  if (
-    command.includes("buenas tardes")
-  ) {
-
-    return (
-      "Buenas tardes, señor. " +
-      "El sistema se encuentra completamente operativo."
-    );
-
-  }
-
-  if (
-    command.includes("buenas noches")
-  ) {
-
-    return (
-      "Buenas noches, señor. " +
-      "El sistema permanecerá disponible para usted."
+      "Todos los sistemas están preparados."
     );
 
   }
@@ -1003,60 +1415,85 @@ function personality(command) {
   ) {
 
     return (
-      "Funcionando perfectamente, señor. " +
-      "Mis sistemas están operando dentro de los parámetros óptimos."
+      "Operando dentro de los parámetros óptimos, señor."
+    );
+
+  }
+
+  if (
+    command.includes("buenos días") ||
+    command.includes("buenos dias")
+  ) {
+
+    return (
+      "Buenos días, señor. " +
+      "¿En qué puedo asistirle?"
+    );
+
+  }
+
+  if (
+    command.includes("buenas tardes")
+  ) {
+
+    return (
+      "Buenas tardes, señor. " +
+      "El sistema está completamente operativo."
+    );
+
+  }
+
+  if (
+    command.includes("buenas noches")
+  ) {
+
+    return (
+      "Buenas noches, señor. " +
+      "Permaneceré disponible."
     );
 
   }
 
   return null;
+
 }
 
 
 /* =====================================================
-   ESTADO DEL SISTEMA
+   ESTADO
 ===================================================== */
 
 function systemStatus() {
 
   const memory =
-    Object.keys(
-      getMemory()
-    ).length;
+    getMemory().length;
 
   const notes =
     getNotes().length;
 
+  const history =
+    getHistory().length;
+
+  const skills =
+    Object.values(
+      getSkills()
+    )
+    .filter(Boolean)
+    .length;
+
   return (
     "Informe del sistema, señor. " +
-    "Interfaz operativa. " +
-    "Reconocimiento de voz disponible. " +
-    "Memoria local: " +
+    skills +
+    " módulos activos. " +
     memory +
     " recuerdos. " +
-    "Notas almacenadas: " +
     notes +
-    ". Todos los módulos principales están operativos."
-  );
-}
-
-
-/* =====================================================
-   ACTIVACIÓN
-===================================================== */
-
-function activate() {
-
-  status(
-    "SYSTEM ONLINE"
+    " notas. " +
+    history +
+    " comandos registrados. " +
+    "Todos los sistemas principales están operativos."
   );
 
-  const message =
-    "Sistema activado, señor. " +
-    "Todos los módulos se encuentran operativos. " +
-    "Estoy a su servicio.";
-
-  answer(message);
 }
 
 
@@ -1072,78 +1509,69 @@ function respond(command) {
       .trim();
 
 
-  /* MEMORIA */
+  /* APRENDIZAJE */
 
-  const memory =
-    remember(command);
+  const proposed =
+    proposeSkill(command);
 
-  if (memory) {
+  if (proposed) {
 
-    return memory;
+    return proposed;
 
   }
 
 
-  /* RECORDAR */
+  /* MEMORIA */
 
   if (
-    command.includes("qué recuerdas") ||
-    command.includes("que recuerdas")
+    skillEnabled("memoria")
   ) {
 
-    return recallMemory();
+    const memory =
+      remember(command);
+
+    if (memory) {
+
+      return memory;
+
+    }
+
+    if (
+      command.includes("qué recuerdas") ||
+      command.includes("que recuerdas")
+    ) {
+
+      return recallMemory();
+
+    }
 
   }
 
 
   /* NOTAS */
 
-  const note =
-    createNote(command);
-
-  if (note) {
-
-    return note;
-
-  }
-
-
   if (
-    command.includes("qué notas") ||
-    command.includes("que notas") ||
-    command.includes("lee mis notas") ||
-    command.includes("leer mis notas")
+    skillEnabled("notas")
   ) {
 
-    return readNotes();
+    const note =
+      createNote(command);
 
-  }
+    if (note) {
 
+      return note;
 
-  /* TEMPORIZADOR */
+    }
 
-  if (
-    command.includes("temporizador") ||
-    command.includes("temporizador de") ||
-    command.includes("pon un timer") ||
-    command.includes("pon un temporizador")
-  ) {
+    if (
+      command.includes("qué notas") ||
+      command.includes("que notas") ||
+      command.includes("lee mis notas")
+    ) {
 
-    return timer(command);
+      return readNotes();
 
-  }
-
-
-  /* FECHA */
-
-  if (
-    command.includes("qué fecha") ||
-    command.includes("que fecha") ||
-    command.includes("qué día es") ||
-    command.includes("que dia es")
-  ) {
-
-    return getDate();
+    }
 
   }
 
@@ -1151,9 +1579,12 @@ function respond(command) {
   /* HORA */
 
   if (
-    command.includes("qué hora") ||
-    command.includes("que hora") ||
-    command === "hora"
+    skillEnabled("hora") &&
+    (
+      command.includes("qué hora") ||
+      command.includes("que hora") ||
+      command === "hora"
+    )
   ) {
 
     return getTime();
@@ -1161,12 +1592,32 @@ function respond(command) {
   }
 
 
+  /* FECHA */
+
+  if (
+    skillEnabled("fecha") &&
+    (
+      command.includes("qué fecha") ||
+      command.includes("que fecha") ||
+      command.includes("qué día es") ||
+      command.includes("que dia es")
+    )
+  ) {
+
+    return getDate();
+
+  }
+
+
   /* CALCULADORA */
 
   if (
-    command.includes("cuánto es") ||
-    command.includes("cuanto es") ||
-    command.includes("calcula")
+    skillEnabled("calculadora") &&
+    (
+      command.includes("cuánto es") ||
+      command.includes("cuanto es") ||
+      command.includes("calcula")
+    )
   ) {
 
     return calculate(command);
@@ -1174,13 +1625,28 @@ function respond(command) {
   }
 
 
+  /* TEMPORIZADOR */
+
+  if (
+    skillEnabled("temporizador") &&
+    command.includes("temporizador")
+  ) {
+
+    return timer(command);
+
+  }
+
+
   /* BÚSQUEDA */
 
   if (
-    command.startsWith("busca ") ||
-    command.startsWith("buscar ") ||
-    command.startsWith("búscame ") ||
-    command.startsWith("buscame ")
+    skillEnabled("busqueda") &&
+    (
+      command.startsWith("busca ") ||
+      command.startsWith("buscar ") ||
+      command.startsWith("búscame ") ||
+      command.startsWith("buscame ")
+    )
   ) {
 
     return searchWeb(command);
@@ -1191,8 +1657,11 @@ function respond(command) {
   /* CLIMA */
 
   if (
-    command.includes("clima") ||
-    command.includes("tiempo")
+    skillEnabled("clima") &&
+    (
+      command.includes("clima") ||
+      command.includes("tiempo")
+    )
   ) {
 
     return weather(command);
@@ -1203,10 +1672,13 @@ function respond(command) {
   /* MÚSICA */
 
   if (
-    command.startsWith("pon música") ||
-    command.startsWith("pon musica") ||
-    command.startsWith("reproduce música") ||
-    command.startsWith("reproduce musica")
+    skillEnabled("musica") &&
+    (
+      command.startsWith("pon música") ||
+      command.startsWith("pon musica") ||
+      command.startsWith("reproduce música") ||
+      command.startsWith("reproduce musica")
+    )
   ) {
 
     return music(command);
@@ -1217,8 +1689,8 @@ function respond(command) {
   /* DISPOSITIVO */
 
   if (
-    command.includes("qué dispositivo") ||
-    command.includes("que dispositivo")
+    skillEnabled("dispositivo") &&
+    command.includes("qué dispositivo")
   ) {
 
     return deviceInfo();
@@ -1248,8 +1720,7 @@ function respond(command) {
 
     return (
       "Soy JARVIS, señor. " +
-      "Su asistente virtual personal. " +
-      "Mi arquitectura está diseñada para incorporar nuevas habilidades con el tiempo."
+      "Un asistente virtual modular diseñado para incorporar nuevas capacidades de forma controlada."
     );
 
   }
@@ -1263,12 +1734,11 @@ function respond(command) {
   ) {
 
     return (
-      "Actualmente puedo escucharle, " +
-      "recordar información, crear notas, " +
-      "calcular operaciones, establecer temporizadores, " +
-      "consultar búsquedas y clima, abrir música, " +
-      "informarle sobre el sistema y ejecutar nuevos módulos. " +
-      "Y esto es apenas el comienzo, señor."
+      "Puedo recordar información, " +
+      "crear notas, calcular, establecer temporizadores, " +
+      "buscar información, consultar clima, abrir música, " +
+      "registrar comandos y administrar módulos. " +
+      "También puedo identificar nuevas habilidades que usted quiera incorporar, señor."
     );
 
   }
@@ -1283,7 +1753,7 @@ function respond(command) {
 
     return (
       "Enseguida, señor. " +
-      "Sistema activado y módulos preparados."
+      "Todos los módulos están preparados."
     );
 
   }
@@ -1301,13 +1771,12 @@ function respond(command) {
   }
 
 
-  /* RESPUESTA GENERAL */
-
   return (
     "He recibido su instrucción, señor. " +
-    "Esta función todavía no está instalada. " +
-    "Podemos incorporarla como un nuevo módulo."
+    "Esta capacidad todavía no está instalada. " +
+    "Puedo preparar una nueva habilidad para incorporarla de forma controlada."
   );
+
 }
 
 
@@ -1321,48 +1790,37 @@ function listen() {
     window.SpeechRecognition ||
     window.webkitSpeechRecognition;
 
-
   if (!Recognition) {
 
-    const message =
-      "Lo siento, señor. " +
-      "El reconocimiento de voz no está disponible en este navegador.";
-
-    answer(message);
+    answer(
+      "El reconocimiento de voz no está disponible en este navegador, señor."
+    );
 
     return;
 
   }
 
-
   const recognition =
     new Recognition();
-
 
   recognition.lang =
     "es-MX";
 
-
   recognition.continuous =
     false;
 
-
   recognition.interimResults =
     false;
-
 
   status(
     "ESCUCHANDO..."
   );
 
-
   show(
     "Lo escucho, señor."
   );
 
-
   recognition.start();
-
 
   recognition.onresult =
     function(event) {
@@ -1372,17 +1830,23 @@ function listen() {
           .results[0][0]
           .transcript;
 
-
       status(
         "PROCESANDO..."
       );
 
-
       const response =
         respond(command);
 
+      addHistory(
+        command,
+        response
+      );
 
-      answer(response);
+      answer(
+        response
+      );
+
+      showHistory();
 
     };
 
@@ -1394,10 +1858,8 @@ function listen() {
         "SYSTEM ONLINE"
       );
 
-
       answer(
-        "No he podido escucharlo, señor. " +
-        "Inténtelo nuevamente."
+        "No he podido escucharlo, señor. Inténtelo nuevamente."
       );
 
     };
@@ -1406,19 +1868,48 @@ function listen() {
 
 
 /* =====================================================
-   CARGAR VOCES
+   ACTIVACIÓN
+===================================================== */
+
+function activate() {
+
+  status(
+    "SYSTEM ONLINE"
+  );
+
+  const message =
+    "Sistema activado, señor. " +
+    "Todos los módulos están operativos. " +
+    "Estoy a su servicio.";
+
+  answer(
+    message
+  );
+
+}
+
+
+/* =====================================================
+   VOCES
 ===================================================== */
 
 speechSynthesis.onvoiceschanged =
   function() {
 
-    speechSynthesis
-      .getVoices();
+    speechSynthesis.getVoices();
 
   };
 
-</script>
 
+/* =====================================================
+   INICIO
+===================================================== */
+
+showSkills();
+
+showHistory();
+
+</script>
 
 </body>
 </html>
