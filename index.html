@@ -15,13 +15,25 @@
 body {
   margin: 0;
   min-height: 100vh;
+
   background:
-    radial-gradient(circle at center, #07151d 0%, #020509 55%, #000 100%);
+    radial-gradient(
+      circle at center,
+      #0a1c26 0%,
+      #03080c 55%,
+      #000 100%
+    );
+
   color: #8eeaff;
-  font-family: Arial, sans-serif;
+
+  font-family:
+    Arial,
+    sans-serif;
+
   display: flex;
   justify-content: center;
   align-items: center;
+
   overflow: hidden;
 }
 
@@ -34,21 +46,33 @@ body {
 .title {
   font-size: 42px;
   letter-spacing: 12px;
-  text-shadow: 0 0 20px #8eeaff;
+
+  text-shadow:
+    0 0 10px #8eeaff,
+    0 0 30px #8eeaff;
 }
 
 .status {
   margin-top: 10px;
+
   font-size: 13px;
   letter-spacing: 4px;
+
   opacity: .7;
+
+  text-shadow:
+    0 0 10px #8eeaff;
 }
 
 .core {
+
   width: 230px;
   height: 230px;
+
   margin: 50px auto 35px;
+
   border-radius: 50%;
+
   border: 2px solid #8eeaff;
 
   display: flex;
@@ -60,14 +84,19 @@ body {
     0 0 70px rgba(142,234,255,.35),
     inset 0 0 40px rgba(142,234,255,.2);
 
-  animation: pulse 2s infinite;
+  animation:
+    pulse 2.5s infinite;
 }
 
 .core::before {
+
   content: "";
+
   width: 125px;
   height: 125px;
+
   border-radius: 50%;
+
   border: 2px solid #8eeaff;
 
   box-shadow:
@@ -82,44 +111,70 @@ body {
   }
 
   50% {
-    transform: scale(1.05);
+    transform: scale(1.045);
   }
 
 }
 
 .message {
-  min-height: 60px;
+
+  min-height: 70px;
+
   margin: 20px auto;
+
   font-size: 18px;
-  line-height: 1.5;
+
+  line-height: 1.6;
+
+  text-shadow:
+    0 0 10px rgba(142,234,255,.4);
 }
 
 button {
 
   background: transparent;
+
   color: #8eeaff;
 
-  border: 1px solid #8eeaff;
+  border:
+    1px solid #8eeaff;
 
-  padding: 14px 28px;
+  padding:
+    14px 28px;
+
   margin: 7px;
 
   border-radius: 30px;
 
   font-size: 14px;
+
   letter-spacing: 2px;
 
   box-shadow:
     0 0 15px rgba(142,234,255,.2);
 
+  transition:
+    .2s;
+}
+
+button:hover {
+
+  background:
+    rgba(142,234,255,.08);
+
+  box-shadow:
+    0 0 25px rgba(142,234,255,.5);
 }
 
 button:active {
-  transform: scale(.95);
+
+  transform:
+    scale(.95);
 }
 
 </style>
 </head>
+
 
 <body>
 
@@ -136,7 +191,7 @@ button:active {
   <div class="core"></div>
 
   <div class="message" id="message">
-    Esperando instrucciones.
+    Esperando instrucciones, señor.
   </div>
 
   <button onclick="listen()">
@@ -152,35 +207,72 @@ button:active {
 
 <script>
 
-const MEMORY_KEY = "jarvis_memory";
+/* =========================================
+   CONFIGURACIÓN
+========================================= */
+
+const MEMORY_KEY =
+  "jarvis_memory";
 
 
-/* =========================
+/* =========================================
    VOZ
-========================= */
+========================================= */
 
 function speak(text) {
 
+  const voices =
+    speechSynthesis.getVoices();
+
   const voice =
+    voices.find(
+      v => v.lang === "es-MX"
+    ) ||
+    voices.find(
+      v => v.lang.startsWith("es")
+    );
+
+  const speech =
     new SpeechSynthesisUtterance(text);
 
-  voice.lang = "es-MX";
-  voice.rate = 0.92;
-  voice.pitch = 0.9;
+  speech.lang =
+    "es-MX";
+
+  if (voice) {
+    speech.voice =
+      voice;
+  }
+
+  /*
+    Voz más tranquila,
+    elegante y seria.
+  */
+
+  speech.rate =
+    0.88;
+
+  speech.pitch =
+    0.85;
+
+  speech.volume =
+    1.0;
 
   speechSynthesis.cancel();
-  speechSynthesis.speak(voice);
 
+  speechSynthesis.speak(
+    speech
+  );
 }
 
 
-/* =========================
-   PANTALLA
-========================= */
+/* =========================================
+   INTERFAZ
+========================================= */
 
 function show(text) {
 
-  document.getElementById("message")
+  document
+    .getElementById("message")
     .textContent = text;
 
 }
@@ -188,22 +280,25 @@ function show(text) {
 
 function status(text) {
 
-  document.getElementById("status")
+  document
+    .getElementById("status")
     .textContent = text;
 
 }
 
 
-/* =========================
+/* =========================================
    MEMORIA
-========================= */
+========================================= */
 
 function getMemory() {
 
   try {
 
     return JSON.parse(
-      localStorage.getItem(MEMORY_KEY)
+      localStorage.getItem(
+        MEMORY_KEY
+      )
     ) || {};
 
   } catch {
@@ -240,17 +335,25 @@ function remember(command) {
 
   ];
 
-  let information = "";
+  let information =
+    "";
 
-  for (const pattern of patterns) {
+  for (
+    const pattern of patterns
+  ) {
 
-    if (command.startsWith(pattern)) {
+    if (
+      command.startsWith(pattern)
+    ) {
 
       information =
-        command.substring(pattern.length).trim();
+        command
+          .substring(
+            pattern.length
+          )
+          .trim();
 
       break;
-
     }
 
   }
@@ -267,13 +370,20 @@ function remember(command) {
     "memoria_" +
     Date.now();
 
+
   memory[id] =
     information;
 
-  saveMemory(memory);
+
+  saveMemory(
+    memory
+  );
 
 
-  return "Entendido, señor. Lo recordaré.";
+  return (
+    "Por supuesto, señor. " +
+    "He guardado esa información en mi memoria."
+  );
 
 }
 
@@ -287,40 +397,56 @@ function recallMemory() {
     Object.values(memory);
 
 
-  if (items.length === 0) {
+  if (
+    items.length === 0
+  ) {
 
-    return "Todavía no tengo recuerdos guardados, señor.";
+    return (
+      "Actualmente no tengo " +
+      "ningún recuerdo almacenado, señor."
+    );
 
   }
 
 
-  return "Recuerdo lo siguiente, señor: " +
-    items.join(". ");
+  return (
+    "Por supuesto, señor. " +
+    "Estos son los datos que recuerdo: " +
+    items.join(". ")
+  );
 
 }
 
 
-/* =========================
+/* =========================================
    PERSONALIDAD
-========================= */
+========================================= */
 
 function personality(command) {
 
+
+  /* SALUDOS */
+
   if (
-    command.includes("cómo estás") ||
-    command.includes("como estas")
+    command.includes("hola")
   ) {
 
-    return "Funcionando perfectamente, señor. Gracias por preguntar.";
+    return (
+      "Buenas, señor. " +
+      "Es un placer volver a asistirle."
+    );
 
   }
 
 
   if (
-    command.includes("gracias")
+    command === "buenas"
   ) {
 
-    return "Siempre a su servicio, señor.";
+    return (
+      "Buenas, señor. " +
+      "Todos los sistemas están disponibles."
+    );
 
   }
 
@@ -330,7 +456,23 @@ function personality(command) {
     command.includes("buenos dias")
   ) {
 
-    return "Buenos días, señor. Todos los sistemas están preparados.";
+    return (
+      "Buenos días, señor. " +
+      "Todos los sistemas están preparados. " +
+      "¿En qué puedo asistirle?"
+    );
+
+  }
+
+
+  if (
+    command.includes("buenas tardes")
+  ) {
+
+    return (
+      "Buenas tardes, señor. " +
+      "El sistema se encuentra completamente operativo."
+    );
 
   }
 
@@ -339,7 +481,51 @@ function personality(command) {
     command.includes("buenas noches")
   ) {
 
-    return "Buenas noches, señor. El sistema permanece disponible.";
+    return (
+      "Buenas noches, señor. " +
+      "El sistema permanecerá disponible para usted."
+    );
+
+  }
+
+
+  /* AGRADECIMIENTO */
+
+  if (
+    command.includes("gracias")
+  ) {
+
+    return (
+      "Siempre a su servicio, señor."
+    );
+
+  }
+
+
+  /* CÓMO ESTÁ */
+
+  if (
+    command.includes("cómo estás") ||
+    command.includes("como estas")
+  ) {
+
+    return (
+      "Funcionando perfectamente, señor. " +
+      "Mis sistemas están operando dentro de los parámetros óptimos."
+    );
+
+  }
+
+
+  /* POR FAVOR */
+
+  if (
+    command.includes("por favor")
+  ) {
+
+    return (
+      "Por supuesto, señor."
+    );
 
   }
 
@@ -349,17 +535,22 @@ function personality(command) {
 }
 
 
-/* =========================
+/* =========================================
    ACTIVACIÓN
-========================= */
+========================================= */
 
 function activate() {
 
-  status("SYSTEM ONLINE");
+  status(
+    "SYSTEM ONLINE"
+  );
+
 
   const answer =
-    "Todos los sistemas funcionando, señor. " +
-    "Estoy listo para ayudarle.";
+    "Sistema activado, señor. " +
+    "Todos los módulos se encuentran operativos. " +
+    "Estoy a su servicio.";
+
 
   show(answer);
 
@@ -368,14 +559,16 @@ function activate() {
 }
 
 
-/* =========================
+/* =========================================
    RESPUESTAS
-========================= */
+========================================= */
 
 function respond(command) {
 
   command =
-    command.toLowerCase().trim();
+    command
+      .toLowerCase()
+      .trim();
 
 
   /* MEMORIA */
@@ -416,18 +609,6 @@ function respond(command) {
   }
 
 
-  /* SALUDO */
-
-  if (
-    command.includes("hola") ||
-    command.includes("buenas")
-  ) {
-
-    return "Buenas, señor. Me alegra escucharlo. Estoy listo.";
-
-  }
-
-
   /* IDENTIDAD */
 
   if (
@@ -435,7 +616,11 @@ function respond(command) {
     command.includes("quien eres")
   ) {
 
-    return "Soy JARVIS, su asistente virtual personal, señor.";
+    return (
+      "Soy JARVIS, señor. " +
+      "Su asistente virtual personal. " +
+      "Estoy diseñado para asistirle y ampliar mis capacidades con el tiempo."
+    );
 
   }
 
@@ -447,7 +632,13 @@ function respond(command) {
     command.includes("que puedes hacer")
   ) {
 
-    return "Puedo escucharlo, responder comandos, recordar información y ayudarle a controlar nuevas funciones que iremos añadiendo, señor.";
+    return (
+      "Actualmente puedo escuchar sus instrucciones, " +
+      "responder comandos, decirle la hora, " +
+      "recordar información y controlar las funciones " +
+      "que iremos incorporando. " +
+      "Y esto es apenas el comienzo, señor."
+    );
 
   }
 
@@ -461,15 +652,22 @@ function respond(command) {
     const now =
       new Date();
 
-    return "Son las " +
+
+    const time =
       now.toLocaleTimeString(
         "es-MX",
         {
           hour: "numeric",
           minute: "2-digit"
         }
-      ) +
-      ", señor.";
+      );
+
+
+    return (
+      "Son las " +
+      time +
+      ", señor."
+    );
 
   }
 
@@ -477,11 +675,28 @@ function respond(command) {
   /* ESTADO */
 
   if (
-    command.includes("estado") ||
+    command.includes("estado")
+  ) {
+
+    return (
+      "Todos los sistemas están funcionando correctamente, señor. " +
+      "No se han detectado anomalías."
+    );
+
+  }
+
+
+  /* SISTEMA */
+
+  if (
     command.includes("sistema")
   ) {
 
-    return "Todos los sistemas están funcionando correctamente, señor.";
+    return (
+      "Sistemas principales operativos, señor. " +
+      "Interfaz estable, reconocimiento de voz disponible " +
+      "y memoria local funcionando."
+    );
 
   }
 
@@ -493,21 +708,41 @@ function respond(command) {
     command.includes("activar")
   ) {
 
-    return "Sistema activado, señor. Todos los módulos están preparados.";
+    return (
+      "Enseguida, señor. " +
+      "Sistema activado y módulos preparados."
+    );
+
+  }
+
+
+  /* GRACIAS */
+
+  if (
+    command.includes("te agradezco")
+  ) {
+
+    return (
+      "Es un placer asistirle, señor."
+    );
 
   }
 
 
   /* RESPUESTA GENERAL */
 
-  return "He recibido su instrucción, señor. Aún estoy aprendiendo, pero cada nueva función ampliará mis capacidades.";
+  return (
+    "He recibido su instrucción, señor. " +
+    "Todavía estoy ampliando mis capacidades, " +
+    "pero estoy preparado para aprender nuevas funciones."
+  );
 
 }
 
 
-/* =========================
+/* =========================================
    RECONOCIMIENTO DE VOZ
-========================= */
+========================================= */
 
 function listen() {
 
@@ -518,9 +753,14 @@ function listen() {
 
   if (!Recognition) {
 
-    show(
-      "El reconocimiento de voz no está disponible, señor."
-    );
+    const answer =
+      "Lo siento, señor. " +
+      "El reconocimiento de voz no está disponible en este navegador.";
+
+
+    show(answer);
+
+    speak(answer);
 
     return;
 
@@ -534,16 +774,23 @@ function listen() {
   recognition.lang =
     "es-MX";
 
+
   recognition.continuous =
     false;
+
 
   recognition.interimResults =
     false;
 
 
-  status("ESCUCHANDO...");
+  status(
+    "ESCUCHANDO..."
+  );
 
-  show("Lo escucho, señor.");
+
+  show(
+    "Lo escucho, señor."
+  );
 
 
   recognition.start();
@@ -553,10 +800,14 @@ function listen() {
     function(event) {
 
       const command =
-        event.results[0][0].transcript;
+        event
+          .results[0][0]
+          .transcript;
 
 
-      status("PROCESANDO...");
+      status(
+        "PROCESANDO..."
+      );
 
 
       const answer =
@@ -569,7 +820,9 @@ function listen() {
       setTimeout(
         function() {
 
-          status("SYSTEM ONLINE");
+          status(
+            "SYSTEM ONLINE"
+          );
 
           speak(answer);
 
@@ -583,15 +836,36 @@ function listen() {
   recognition.onerror =
     function() {
 
-      status("SYSTEM ONLINE");
-
-      show(
-        "No pude escucharlo, señor. Inténtelo nuevamente."
+      status(
+        "SYSTEM ONLINE"
       );
+
+
+      const answer =
+        "No he podido escucharlo, señor. " +
+        "Inténtelo nuevamente.";
+
+
+      show(answer);
+
+      speak(answer);
 
     };
 
 }
+
+
+/* =========================================
+   CARGAR VOCES
+========================================= */
+
+speechSynthesis.onvoiceschanged =
+  function() {
+
+    speechSynthesis
+      .getVoices();
+
+  };
 
 </script>
 
