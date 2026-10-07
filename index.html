@@ -48,7 +48,6 @@ body {
   width: 230px;
   height: 230px;
   margin: 50px auto 35px;
-
   border-radius: 50%;
   border: 2px solid #8eeaff;
 
@@ -66,10 +65,8 @@ body {
 
 .core::before {
   content: "";
-
   width: 125px;
   height: 125px;
-
   border-radius: 50%;
   border: 2px solid #8eeaff;
 
@@ -105,7 +102,6 @@ button {
   border: 1px solid #8eeaff;
 
   padding: 14px 28px;
-
   margin: 7px;
 
   border-radius: 30px;
@@ -156,6 +152,9 @@ button:active {
 
 <script>
 
+const MEMORY_KEY = "jarvis_memory";
+
+
 function speak(text) {
 
   const voice =
@@ -166,7 +165,6 @@ function speak(text) {
   voice.pitch = 0.9;
 
   speechSynthesis.cancel();
-
   speechSynthesis.speak(voice);
 }
 
@@ -187,29 +185,212 @@ function status(text) {
 }
 
 
+function getMemory() {
+
+  try {
+
+    return JSON.parse(
+      localStorage.getItem(MEMORY_KEY)
+    ) || {};
+
+  } catch {
+
+    return {};
+
+  }
+
+}
+
+
+function saveMemory(memory) {
+
+  localStorage.setItem(
+    MEMORY_KEY,
+    JSON.stringify(memory)
+  );
+
+}
+
+
 function activate() {
 
   status("SYSTEM ONLINE");
 
-  show("Todos los sistemas funcionando.");
+  const answer =
+    "Todos los sistemas funcionando. " +
+    "Estoy listo para ayudarte.";
 
-  speak(
-    "Todos los sistemas funcionando. ¿En qué puedo ayudarte?"
-  );
+  show(answer);
+
+  speak(answer);
+
+}
+
+
+function remember(command) {
+
+  const memory =
+    getMemory();
+
+  const patterns = [
+
+    "recuerda que ",
+    "recuerda ",
+    "memoriza ",
+    "guarda que ",
+    "guarda "
+
+  ];
+
+  let information = "";
+
+  for (const pattern of patterns) {
+
+    if (command.startsWith(pattern)) {
+
+      information =
+        command.substring(pattern.length).trim();
+
+      break;
+
+    }
+
+  }
+
+
+  if (!information) {
+
+    return null;
+
+  }
+
+
+  const id =
+    "memoria_" +
+    Date.now();
+
+  memory[id] =
+    information;
+
+  saveMemory(memory);
+
+
+  return "Entendido. Lo recordaré.";
+
+}
+
+
+function recallMemory() {
+
+  const memory =
+    getMemory();
+
+  const items =
+    Object.values(memory);
+
+
+  if (items.length === 0) {
+
+    return "Todavía no tengo recuerdos guardados.";
+
+  }
+
+
+  return "Recuerdo lo siguiente: " +
+    items.join(". ");
+
+}
+
+
+function personality(command) {
+
+  if (
+    command.includes("cómo estás") ||
+    command.includes("como estas")
+  ) {
+
+    return "Funcionando perfectamente. Gracias por preguntar.";
+
+  }
+
+
+  if (
+    command.includes("gracias")
+  ) {
+
+    return "Siempre a tu servicio.";
+
+  }
+
+
+  if (
+    command.includes("buenos días") ||
+    command.includes("buenos dias")
+  ) {
+
+    return "Buenos días. Todos los sistemas están preparados.";
+
+  }
+
+
+  if (
+    command.includes("buenas noches")
+  ) {
+
+    return "Buenas noches. El sistema permanece disponible.";
+
+  }
+
+
+  return null;
 
 }
 
 
 function respond(command) {
 
-  command = command.toLowerCase();
+  command =
+    command.toLowerCase().trim();
+
+
+  const saved =
+    remember(command);
+
+  if (saved) {
+
+    return saved;
+
+  }
+
+
+  if (
+    command.includes("qué recuerdas") ||
+    command.includes("que recuerdas") ||
+    command.includes("qué recuerdas de mí") ||
+    command.includes("que recuerdas de mi")
+  ) {
+
+    return recallMemory();
+
+  }
+
+
+  const personalityAnswer =
+    personality(command);
+
+  if (personalityAnswer) {
+
+    return personalityAnswer;
+
+  }
+
 
   if (
     command.includes("hola") ||
     command.includes("buenas")
   ) {
 
-    return "Buenas. Estoy listo para ayudarte.";
+    return "Buenas. Me alegra escucharte. Estoy listo.";
 
   }
 
@@ -219,7 +400,7 @@ function respond(command) {
     command.includes("quien eres")
   ) {
 
-    return "Soy JARVIS, tu asistente virtual.";
+    return "Soy JARVIS, tu asistente virtual personal.";
 
   }
 
@@ -229,7 +410,7 @@ function respond(command) {
     command.includes("que puedes hacer")
   ) {
 
-    return "Puedo escucharte, responder comandos básicos y controlar las funciones que iremos añadiendo.";
+    return "Puedo escucharte, responder comandos, recordar información y ayudarte a controlar nuevas funciones que iremos añadiendo.";
 
   }
 
@@ -238,7 +419,8 @@ function respond(command) {
     command.includes("hora")
   ) {
 
-    const now = new Date();
+    const now =
+      new Date();
 
     return "Son las " +
       now.toLocaleTimeString(
@@ -272,16 +454,7 @@ function respond(command) {
   }
 
 
-  if (
-    command.includes("gracias")
-  ) {
-
-    return "A tu servicio.";
-
-  }
-
-
-  return "He recibido tu instrucción. Todavía estoy aprendiendo nuevas funciones.";
+  return "He recibido tu instrucción. Aún estoy aprendiendo, pero cada función nueva ampliará mis capacidades.";
 
 }
 
@@ -291,6 +464,7 @@ function listen() {
   const Recognition =
     window.SpeechRecognition ||
     window.webkitSpeechRecognition;
+
 
   if (!Recognition) {
 
@@ -306,11 +480,15 @@ function listen() {
   const recognition =
     new Recognition();
 
-  recognition.lang = "es-MX";
 
-  recognition.continuous = false;
+  recognition.lang =
+    "es-MX";
 
-  recognition.interimResults = false;
+  recognition.continuous =
+    false;
+
+  recognition.interimResults =
+    false;
 
 
   status("ESCUCHANDO...");
@@ -321,42 +499,47 @@ function listen() {
   recognition.start();
 
 
-  recognition.onresult = function(event) {
+  recognition.onresult =
+    function(event) {
 
-    const command =
-      event.results[0][0].transcript;
-
-
-    status("PROCESANDO...");
+      const command =
+        event.results[0][0].transcript;
 
 
-    const answer =
-      respond(command);
+      status("PROCESANDO...");
 
 
-    show(answer);
+      const answer =
+        respond(command);
 
 
-    setTimeout(function() {
+      show(answer);
+
+
+      setTimeout(
+        function() {
+
+          status("SYSTEM ONLINE");
+
+          speak(answer);
+
+        },
+        300
+      );
+
+    };
+
+
+  recognition.onerror =
+    function() {
 
       status("SYSTEM ONLINE");
 
-      speak(answer);
+      show(
+        "No pude escucharte. Inténtalo nuevamente."
+      );
 
-    }, 300);
-
-  };
-
-
-  recognition.onerror = function() {
-
-    status("SYSTEM ONLINE");
-
-    show(
-      "No pude escucharte. Inténtalo nuevamente."
-    );
-
-  };
+    };
 
 }
 
