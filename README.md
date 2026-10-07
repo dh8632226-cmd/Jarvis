@@ -1,1 +1,217 @@
-# Jarvis
+# Jarvis<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #02050a;
+      color: #8eeaff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .interface {
+      width: 92%;
+      max-width: 700px;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 42px;
+      letter-spacing: 12px;
+      margin-bottom: 8px;
+    }
+
+    .status {
+      font-size: 13px;
+      letter-spacing: 4px;
+      opacity: .7;
+      margin-bottom: 45px;
+    }
+
+    .core {
+      width: 220px;
+      height: 220px;
+      margin: auto;
+      border-radius: 50%;
+      border: 2px solid #8eeaff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 0 15px #8eeaff,
+        0 0 50px rgba(142,234,255,.4),
+        inset 0 0 30px rgba(142,234,255,.25);
+      animation: pulse 2s infinite;
+    }
+
+    .core::before {
+      content: "";
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 2px solid #8eeaff;
+      box-shadow: 0 0 25px #8eeaff;
+    }
+
+    @keyframes pulse {
+      50% {
+        transform: scale(1.04);
+      }
+    }
+
+    .message {
+      margin: 45px auto 20px;
+      min-height: 50px;
+      font-size: 18px;
+    }
+
+    button {
+      display: block;
+      margin: 12px auto;
+      background: transparent;
+      color: #8eeaff;
+      border: 1px solid #8eeaff;
+      padding: 14px 28px;
+      border-radius: 30px;
+      font-size: 15px;
+      letter-spacing: 2px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="interface">
+
+    <div class="title">JARVIS</div>
+
+    <div class="status" id="status">
+      SYSTEM OFFLINE
+    </div>
+
+    <div class="core"></div>
+
+    <div class="message" id="message">
+      Sistema preparado.
+    </div>
+
+    <button onclick="activateJarvis()">
+      ACTIVAR JARVIS
+    </button>
+
+    <button onclick="listenToMe()">
+      🎙️ HABLAR CON JARVIS
+    </button>
+
+  </div>
+
+  <script>
+
+    function speak(text) {
+
+      const speech = new SpeechSynthesisUtterance(text);
+
+      speech.lang = "es-MX";
+      speech.rate = 0.95;
+
+      speechSynthesis.cancel();
+      speechSynthesis.speak(speech);
+    }
+
+
+    function activateJarvis() {
+
+      document.getElementById("status").textContent =
+        "SYSTEM ONLINE";
+
+      document.getElementById("message").textContent =
+        "Buenas. Estoy listo para ayudarte.";
+
+      speak("Buenas. Estoy listo para ayudarte.");
+    }
+
+
+    function listenToMe() {
+
+      const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+
+        document.getElementById("message").textContent =
+          "El reconocimiento de voz no está disponible.";
+
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+
+      recognition.lang = "es-MX";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      document.getElementById("status").textContent =
+        "ESCUCHANDO...";
+
+      document.getElementById("message").textContent =
+        "Te escucho.";
+
+      recognition.start();
+
+      recognition.onresult = function(event) {
+
+        const text =
+          event.results[0][0].transcript;
+
+        document.getElementById("status").textContent =
+          "PROCESANDO...";
+
+        document.getElementById("message").textContent =
+          "Tú dijiste: " + text;
+
+        setTimeout(function() {
+
+          document.getElementById("status").textContent =
+            "SYSTEM ONLINE";
+
+          document.getElementById("message").textContent =
+            "He recibido tu mensaje. Pronto podré responderte con inteligencia artificial.";
+
+          speak(
+            "He recibido tu mensaje. Pronto podré responderte con inteligencia artificial."
+          );
+
+        }, 700);
+      };
+
+
+      recognition.onerror = function() {
+
+        document.getElementById("status").textContent =
+          "SYSTEM ONLINE";
+
+        document.getElementById("message").textContent =
+          "No pude escucharte. Inténtalo nuevamente.";
+      };
+
+    }
+
+  </script>
+
+</body>
+</html>
