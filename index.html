@@ -155,6 +155,10 @@ button:active {
 const MEMORY_KEY = "jarvis_memory";
 
 
+/* =========================
+   VOZ
+========================= */
+
 function speak(text) {
 
   const voice =
@@ -166,8 +170,13 @@ function speak(text) {
 
   speechSynthesis.cancel();
   speechSynthesis.speak(voice);
+
 }
 
+
+/* =========================
+   PANTALLA
+========================= */
 
 function show(text) {
 
@@ -184,6 +193,10 @@ function status(text) {
 
 }
 
+
+/* =========================
+   MEMORIA
+========================= */
 
 function getMemory() {
 
@@ -208,21 +221,6 @@ function saveMemory(memory) {
     MEMORY_KEY,
     JSON.stringify(memory)
   );
-
-}
-
-
-function activate() {
-
-  status("SYSTEM ONLINE");
-
-  const answer =
-    "Todos los sistemas funcionando. " +
-    "Estoy listo para ayudarte.";
-
-  show(answer);
-
-  speak(answer);
 
 }
 
@@ -275,7 +273,7 @@ function remember(command) {
   saveMemory(memory);
 
 
-  return "Entendido. Lo recordaré.";
+  return "Entendido, señor. Lo recordaré.";
 
 }
 
@@ -291,16 +289,20 @@ function recallMemory() {
 
   if (items.length === 0) {
 
-    return "Todavía no tengo recuerdos guardados.";
+    return "Todavía no tengo recuerdos guardados, señor.";
 
   }
 
 
-  return "Recuerdo lo siguiente: " +
+  return "Recuerdo lo siguiente, señor: " +
     items.join(". ");
 
 }
 
+
+/* =========================
+   PERSONALIDAD
+========================= */
 
 function personality(command) {
 
@@ -309,7 +311,7 @@ function personality(command) {
     command.includes("como estas")
   ) {
 
-    return "Funcionando perfectamente. Gracias por preguntar.";
+    return "Funcionando perfectamente, señor. Gracias por preguntar.";
 
   }
 
@@ -318,7 +320,7 @@ function personality(command) {
     command.includes("gracias")
   ) {
 
-    return "Siempre a tu servicio.";
+    return "Siempre a su servicio, señor.";
 
   }
 
@@ -328,7 +330,7 @@ function personality(command) {
     command.includes("buenos dias")
   ) {
 
-    return "Buenos días. Todos los sistemas están preparados.";
+    return "Buenos días, señor. Todos los sistemas están preparados.";
 
   }
 
@@ -337,7 +339,7 @@ function personality(command) {
     command.includes("buenas noches")
   ) {
 
-    return "Buenas noches. El sistema permanece disponible.";
+    return "Buenas noches, señor. El sistema permanece disponible.";
 
   }
 
@@ -347,11 +349,36 @@ function personality(command) {
 }
 
 
+/* =========================
+   ACTIVACIÓN
+========================= */
+
+function activate() {
+
+  status("SYSTEM ONLINE");
+
+  const answer =
+    "Todos los sistemas funcionando, señor. " +
+    "Estoy listo para ayudarle.";
+
+  show(answer);
+
+  speak(answer);
+
+}
+
+
+/* =========================
+   RESPUESTAS
+========================= */
+
 function respond(command) {
 
   command =
     command.toLowerCase().trim();
 
+
+  /* MEMORIA */
 
   const saved =
     remember(command);
@@ -362,6 +389,8 @@ function respond(command) {
 
   }
 
+
+  /* RECORDAR */
 
   if (
     command.includes("qué recuerdas") ||
@@ -375,6 +404,8 @@ function respond(command) {
   }
 
 
+  /* PERSONALIDAD */
+
   const personalityAnswer =
     personality(command);
 
@@ -385,35 +416,43 @@ function respond(command) {
   }
 
 
+  /* SALUDO */
+
   if (
     command.includes("hola") ||
     command.includes("buenas")
   ) {
 
-    return "Buenas. Me alegra escucharte. Estoy listo.";
+    return "Buenas, señor. Me alegra escucharlo. Estoy listo.";
 
   }
 
+
+  /* IDENTIDAD */
 
   if (
     command.includes("quién eres") ||
     command.includes("quien eres")
   ) {
 
-    return "Soy JARVIS, tu asistente virtual personal.";
+    return "Soy JARVIS, su asistente virtual personal, señor.";
 
   }
 
+
+  /* CAPACIDADES */
 
   if (
     command.includes("qué puedes hacer") ||
     command.includes("que puedes hacer")
   ) {
 
-    return "Puedo escucharte, responder comandos, recordar información y ayudarte a controlar nuevas funciones que iremos añadiendo.";
+    return "Puedo escucharlo, responder comandos, recordar información y ayudarle a controlar nuevas funciones que iremos añadiendo, señor.";
 
   }
 
+
+  /* HORA */
 
   if (
     command.includes("hora")
@@ -429,35 +468,46 @@ function respond(command) {
           hour: "numeric",
           minute: "2-digit"
         }
-      );
+      ) +
+      ", señor.";
 
   }
 
+
+  /* ESTADO */
 
   if (
     command.includes("estado") ||
     command.includes("sistema")
   ) {
 
-    return "Todos los sistemas están funcionando correctamente.";
+    return "Todos los sistemas están funcionando correctamente, señor.";
 
   }
 
+
+  /* ACTIVAR */
 
   if (
     command.includes("activa") ||
     command.includes("activar")
   ) {
 
-    return "Sistema activado. Todos los módulos están preparados.";
+    return "Sistema activado, señor. Todos los módulos están preparados.";
 
   }
 
 
-  return "He recibido tu instrucción. Aún estoy aprendiendo, pero cada función nueva ampliará mis capacidades.";
+  /* RESPUESTA GENERAL */
+
+  return "He recibido su instrucción, señor. Aún estoy aprendiendo, pero cada nueva función ampliará mis capacidades.";
 
 }
 
+
+/* =========================
+   RECONOCIMIENTO DE VOZ
+========================= */
 
 function listen() {
 
@@ -469,7 +519,7 @@ function listen() {
   if (!Recognition) {
 
     show(
-      "El reconocimiento de voz no está disponible."
+      "El reconocimiento de voz no está disponible, señor."
     );
 
     return;
@@ -493,7 +543,7 @@ function listen() {
 
   status("ESCUCHANDO...");
 
-  show("Te escucho.");
+  show("Lo escucho, señor.");
 
 
   recognition.start();
@@ -536,7 +586,7 @@ function listen() {
       status("SYSTEM ONLINE");
 
       show(
-        "No pude escucharte. Inténtalo nuevamente."
+        "No pude escucharlo, señor. Inténtelo nuevamente."
       );
 
     };
